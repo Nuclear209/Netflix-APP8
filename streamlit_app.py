@@ -25,7 +25,7 @@ if st.sidebar.checkbox('Mostrar todos los filmes'):
     st.subheader('Todos los filmes')
 
     # Recuperar los datos de Firestore (colección de filmes)
-    films_ref = db.collection("films")  # Cambia "films" por el nombre de tu colección
+    films_ref = db.collection("names")  # Cambia "films" por el nombre de tu colección
     films = list(films_ref.stream())  # Recuperamos todos los documentos de la colección
     films_dict = [film.to_dict() for film in films]  # Convertir los documentos en un diccionario
     data = pd.DataFrame(films_dict)  # Convertir los diccionarios en un DataFrame
@@ -48,18 +48,8 @@ if btnBuscar and titulofilme:
         st.warning("No se han cargado los datos aún.")
 
 # Filtrar los filmes por director
-selected_director = st.sidebar.selectbox("Seleccionar Director", data['director'].unique() if 'data' in locals() else [])
-btnFilterbyDirector = st.sidebar.button('Filtrar por Director')
-
-if btnFilterbyDirector and selected_director:
-    if 'data' in locals() and not data.empty:
-        filtered_by_director = filter_by_director(selected_director, data)
-        count_row = filtered_by_director.shape[0]  # Número de filas
-        st.write(f"Total de filmes de {selected_director}: {count_row}")
-        if not filtered_by_director.empty:
-            st.dataframe(filtered_by_director)
-    else:
-        st.warning("No se han cargado los datos aún.")
+selected_director = st.sidebar.selectbox("Seleccionar director", data['director'].unique() if 'data' in locals() else [])
+btnFilterbydirector = st.sidebar.button('Filtrar por director')
 
 # Insertar un nuevo filme
 with st.sidebar.form("insert_film_form"):
@@ -79,7 +69,7 @@ with st.sidebar.form("insert_film_form"):
             else:
                 # Insertar el nuevo filme en Firestore
                 new_film = {'name': new_name, 'genre': new_genre, 'director': new_director, 'company': new_company}
-                db.collection('films').add(new_film)  # Asegúrate de que la colección se llama 'films'
+                db.collection('names').add(new_film)  # Asegúrate de que la colección se llama 'films'
                 st.success(f"¡El filme '{new_name}' ha sido insertado exitosamente!")
 
                 # Añadir el nuevo filme directamente a los datos cargados en session_state
